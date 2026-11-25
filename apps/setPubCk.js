@@ -41,10 +41,8 @@ export class setPubCk extends plugin {
   async pubCk() {
     let msg = this.e.msg
 
-    if (!(
-      /(ltoken|ltoken_v2)/.test(this.e.msg) && /(ltuid|ltmid_v2|account_mid_v2)/.test(this.e.msg)
-    )) {
-      this.e.reply("cookie错误，请发送正确的cookie")
+    if (!(/ltoken_v2/.test(this.e.msg) && /(ltuid_v2|ltmid_v2|account_mid_v2)/.test(this.e.msg))) {
+      this.e.reply("cookie错误，请发送正确的v2版cookie")
       return true
     }
 
@@ -64,14 +62,12 @@ export class setPubCk extends plugin {
     lodash.forEach(param, (v, k) => {
       if (
         [
-          "ltoken",
-          "ltuid",
-          "cookie_token",
-          "account_id",
+          "ltoken_v2",
+          "ltuid_v2",
           "cookie_token_v2",
+          "account_id_v2",
           "account_mid_v2",
           "ltmid_v2",
-          "ltoken_v2",
         ].includes(k)
       ) {
         this.ck += `${k}=${v};`
@@ -85,7 +81,7 @@ export class setPubCk extends plugin {
       return
     }
 
-    this.ltuid = param.ltuid
+    this.ltuid = param.ltuid_v2 || param.account_id_v2
     // 判断是否是v2版ck
     if (
       param.cookie_token_v2 &&
@@ -97,7 +93,7 @@ export class setPubCk extends plugin {
       if (userFullInfo?.data?.user_info) {
         let userInfo = userFullInfo?.data?.user_info
         this.ltuid = userInfo.uid
-        this.ck = `${this.ck}ltuid=${this.ltuid};`
+        this.ck = `${this.ck}ltuid_v2=${this.ltuid};`
       } else {
         logger.mark(`配置公共cookie错误：${userFullInfo.message || "cookie错误"}`)
         await this.e.reply(`配置公共cookie错误：${userFullInfo.message || "cookie错误"}`)
